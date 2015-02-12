@@ -111,6 +111,7 @@ clean:
 	rm -f Image System.map tmp_make core boot/bootsect boot/setup \
 		boot/bootsect.s boot/setup.s
 	rm -f init/*.o tools/system tools/build boot/*.o
+	rm -f tools/kernel system.S
 	(cd mm;make clean)
 	(cd fs;make clean)
 	(cd kernel;make clean)
