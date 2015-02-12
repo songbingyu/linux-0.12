@@ -7,12 +7,12 @@ RAMDISK = #-DRAMDISK=512
 AS86	=as86 -0 -a
 LD86	=ld86 -0
 
-AS	=gas
-LD	=gld
-LDFLAGS	=-s -x -M
-CC	=gcc $(RAMDISK)
-CFLAGS	=-Wall -O -fstrength-reduce -fomit-frame-pointer \
--fcombine-regs -mstring-insns
+AS	=as --32
+LD	=ld -m elf_i386
+LDFLAGS	= -Ttext 0 -e startup_32
+CC	=gcc -m32  $(RAMDISK)
+CFLAGS	=-g3 -O0 -fstrength-reduce -fomit-frame-pointer \
+-fno-stack-protector -fno-builtin -w #-Wall 
 CPP	=cpp -nostdinc -Iinclude
 
 #
@@ -20,8 +20,8 @@ CPP	=cpp -nostdinc -Iinclude
 # This can be either FLOPPY, /dev/xxxx or empty, in which case the
 # default of /dev/hd6 is used by 'build'.
 #
-ROOT_DEV=/dev/hd6
-SWAP_DEV=/dev/hd2
+ROOT_DEV=0301 #/dev/hd6
+SWAP_DEV=0304 #/dev/hd2
 
 ARCHIVES=kernel/kernel.o mm/mm.o fs/fs.o
 DRIVERS =kernel/blk_drv/blk_drv.a kernel/chr_drv/chr_drv.a
@@ -39,17 +39,25 @@ LIBS	=lib/lib.a
 
 all:	Image
 
-Image: boot/bootsect boot/setup tools/system tools/build
-	tools/build boot/bootsect boot/setup tools/system $(ROOT_DEV) \
-		$(SWAP_DEV) > Image
-	sync
+#Image: boot/bootsect boot/setup tools/system tools/build
+#	tools/build boot/bootsect boot/setup tools/system $(ROOT_DEV) \
+#		$(SWAP_DEV) > Image
+#	sync
+
+Image: boot/bootsect boot/setup tools/system
+	@cp -f tools/system system.tmp
+	@strip system.tmp
+	@objcopy -O binary -R .note -R .comment system.tmp tools/kernel
+	@tools/build.sh boot/bootsect boot/setup tools/kernel Image $(ROOT_DEV) $(SWAP_DEV)
+	@rm system.tmp
+	@sync
 
 disk: Image
 	dd bs=8192 if=Image of=/dev/PS0
 
-tools/build: tools/build.c
-	$(CC) $(CFLAGS) \
-	-o tools/build tools/build.c
+#tools/build: tools/build.c
+#	$(CC) $(CFLAGS) \
+#	-o tools/build tools/build.c
 
 boot/head.o: boot/head.s
 
@@ -60,7 +68,9 @@ tools/system:	boot/head.o init/main.o \
 	$(DRIVERS) \
 	$(MATH) \
 	$(LIBS) \
-	-o tools/system > System.map
+	-o tools/system
+	@nm tools/system | grep -v '\(compiled\)\|\(\.o$$\)\|\( [aU] \)\|\(\.\.ng$$\)\|\(LASH[RL]DI\)'| sort > System.map
+	@objdump -S tools/system > system.S
 
 kernel/math/math.a:
 	(cd kernel/math; make)

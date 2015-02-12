@@ -4,6 +4,7 @@
  *  (C) 1991  Linus Torvalds
  */
 
+#define __IN_MAIN__
 #define __LIBRARY__
 #include <unistd.h>
 #include <time.h>
@@ -20,6 +21,8 @@
  * won't be any messing with the stack from main(), but we define
  * some others too.
  */
+static inline int fork() __attribute__((always_inline));
+static inline int pause() __attribute__((always_inline));
 static inline _syscall0(int,fork)
 static inline _syscall0(int,pause)
 static inline _syscall1(int,setup,void *,BIOS)
@@ -173,10 +176,10 @@ void main(void)		/* This really IS void, no error here. */
  * task can run, and if not we return here.
  */
 	for(;;)
-		__asm__("int $0x80"::"a" (__NR_pause):"ax");
+		__asm__("int $0x80"::"a" (__NR_pause));
 }
 
-static int printf(const char *fmt, ...)
+int printf(const char *fmt, ...)
 {
 	va_list args;
 	int i;

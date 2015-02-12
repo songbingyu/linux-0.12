@@ -62,10 +62,10 @@ static struct hd_struct {
 static int hd_sizes[5*MAX_HD] = {0, };
 
 #define port_read(port,buf,nr) \
-__asm__("cld;rep;insw"::"d" (port),"D" (buf),"c" (nr):"cx","di")
+__asm__("cld;rep;insw"::"d" (port),"D" (buf),"c" (nr))
 
 #define port_write(port,buf,nr) \
-__asm__("cld;rep;outsw"::"d" (port),"S" (buf),"c" (nr):"cx","si")
+__asm__("cld;rep;outsw"::"d" (port),"S" (buf),"c" (nr))
 
 extern void hd_interrupt(void);
 extern void rd_load(void);
@@ -169,7 +169,7 @@ static int controller_ready(void)
 {
 	int retries = 100000;
 
-	while (--retries && (inb_p(HD_STATUS)&0xc0)!=0x40);
+	while (--retries && (inb_p(HD_STATUS)&0x80));
 	return (retries);
 }
 
