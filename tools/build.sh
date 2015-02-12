@@ -40,11 +40,11 @@ echo 'Swap device is ('$DEFAULT_MAJOR_SWAP, $DEFAULT_MINOR_SWAP')'
 
 # Write bootsect (512 bytes, one sector) to stdout
 [ ! -f "$bootsect" ] && echo "there is no bootsect binary file there" && exit -1
-dd bs=32 if=$bootsect of=$IMAGE skip=1 2>&1 >/dev/null
+dd bs=512 if=$bootsect of=$IMAGE count=1 2>&1 >/dev/null
 
 # Write setup(4 * 512bytes, four sectors) to stdout
 [ ! -f "$setup" ] && echo "there is no setup binary file there" && exit -1
-dd bs=32 if=$setup of=$IMAGE skip=1 seek=16 count=64 2>&1 >/dev/null
+dd bs=512 if=$setup of=$IMAGE seek=1 count=4 2>&1 >/dev/null
 #dd if=$setup seek=1 bs=512 count=4 of=$IMAGE 2>&1 >/dev/null
 
 # Write system(< SYS_SIZE) to stdout

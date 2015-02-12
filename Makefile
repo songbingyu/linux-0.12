@@ -59,7 +59,9 @@ disk: Image
 #	$(CC) $(CFLAGS) \
 #	-o tools/build tools/build.c
 
-boot/head.o: boot/head.s
+#boot/head.o: boot/head.s
+boot/head.o: boot/head.asm
+	nasm -f elf32 -o boot/head.o boot/head.asm
 
 tools/system:	boot/head.o init/main.o \
 		$(ARCHIVES) $(DRIVERS) $(MATH) $(LIBS)
@@ -93,19 +95,25 @@ fs/fs.o:
 lib/lib.a:
 	(cd lib; make)
 
-boot/setup: boot/setup.s
-	$(AS86) -o boot/setup.o boot/setup.s
-	$(LD86) -s -o boot/setup boot/setup.o
+#boot/setup: boot/setup.s
+#	$(AS86) -o boot/setup.o boot/setup.s
+#	$(LD86) -s -o boot/setup boot/setup.o
+#
+#boot/setup.s:	boot/setup.S include/linux/config.h
+#	$(CPP) -traditional boot/setup.S -o boot/setup.s
+#
+#boot/bootsect.s:	boot/bootsect.S include/linux/config.h
+#	$(CPP) -traditional boot/bootsect.S -o boot/bootsect.s
+#
+#boot/bootsect:	boot/bootsect.s
+#	$(AS86) -o boot/bootsect.o boot/bootsect.s
+#	$(LD86) -s -o boot/bootsect boot/bootsect.o
 
-boot/setup.s:	boot/setup.S include/linux/config.h
-	$(CPP) -traditional boot/setup.S -o boot/setup.s
+boot/setup: boot/setup.asm
+	nasm -f bin -o boot/setup boot/setup.asm
 
-boot/bootsect.s:	boot/bootsect.S include/linux/config.h
-	$(CPP) -traditional boot/bootsect.S -o boot/bootsect.s
-
-boot/bootsect:	boot/bootsect.s
-	$(AS86) -o boot/bootsect.o boot/bootsect.s
-	$(LD86) -s -o boot/bootsect boot/bootsect.o
+boot/bootsect: boot/bootsect.asm
+	nasm -f bin -o boot/bootsect boot/bootsect.asm
 
 clean:
 	rm -f Image System.map tmp_make core boot/bootsect boot/setup \
