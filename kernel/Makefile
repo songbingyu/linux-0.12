@@ -14,6 +14,8 @@ CC	=gcc -m32
 CFLAGS	=-g3 -O0 -fstrength-reduce -fomit-frame-pointer -fno-stack-protector \
 	-finline-functions -fno-builtin -nostdinc -I../include -w #-Wall 
 CPP	=gcc -E -nostdinc -I../include
+NASM 	=nasm
+NMFLAGS =-f elf32
 
 .c.s:
 	$(CC) $(CFLAGS) \
@@ -24,17 +26,23 @@ CPP	=gcc -E -nostdinc -I../include
 	$(CC) $(CFLAGS) \
 	-c -o $*.o $<
 
-OBJS  = sched.o sys_call.o traps.o asm.o fork.o \
+OBJS  = sched.o sys_call.elf32 traps.o asm.elf32 fork.o \
 	panic.o printk.o vsprintf.o sys.o exit.o \
 	signal.o mktime.o
 
 kernel.o: $(OBJS)
 	$(LD) -r -o kernel.o $(OBJS)
 	sync
+asm.elf32: asm.asm
+	$(NASM) $(NMFLAGS) asm.asm -o asm.elf32
+
+sys_call.elf32: sys_call.asm
+	$(NASM) $(NMFLAGS) sys_call.asm -o sys_call.elf32
 
 clean:
 	rm -f core *.o *.a tmp_make keyboard.s
 	for i in *.c;do rm -f `basename $$i .c`.s;done
+	rm -f *.elf32
 	(cd chr_drv; make clean)
 	(cd blk_drv; make clean)
 	(cd math; make clean)

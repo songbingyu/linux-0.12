@@ -59,7 +59,9 @@ struct sigaction {
 	void (*sa_restorer)(void);
 };
 
-void (*signal(int _sig, void (*_func)(int)))(int);
+/* void (*signal(int _sig, void (*_func)(int)))(int); */
+typedef void sigfunc(int);
+sigfunc *signal(int signr, sigfunc *handler);
 int raise(int sig);
 int kill(pid_t pid, int sig);
 int sigaddset(sigset_t *mask, int signo);

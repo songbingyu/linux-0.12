@@ -83,7 +83,7 @@ int sys_setup(void * BIOS)
 		return -1;
 	callable = 0;
 #ifndef HD_TYPE
-	for (drive=0 ; drive<2 ; drive++) {
+	for (drive=0 ; drive<MAX_HD ; drive++) {
 		hd_info[drive].cyl = *(unsigned short *) BIOS;
 		hd_info[drive].head = *(unsigned char *) (2+BIOS);
 		hd_info[drive].wpcom = *(unsigned short *) (5+BIOS);
