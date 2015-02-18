@@ -13,7 +13,8 @@
 
 void sys_sync(void);	/* it's really int */
 
-volatile void panic(const char * s)
+void panic(const char * s) __attribute__((noreturn));
+void panic(const char * s)
 {
 	printk("Kernel panic: %s\n\r",s);
 	if (current == task[0])

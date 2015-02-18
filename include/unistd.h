@@ -221,8 +221,8 @@ int execvp(const char * file, char ** argv);
 int execl(const char * pathname, char * arg0, ...);
 int execlp(const char * file, char * arg0, ...);
 int execle(const char * pathname, char * arg0, ...);
-volatile void exit(int status);
-volatile void _exit(int status);
+void exit(int status) __attribute__((noreturn));
+void _exit(int status);
 int fcntl(int fildes, int cmd, ...);
 #ifndef __IN_MAIN__
 int fork(void);

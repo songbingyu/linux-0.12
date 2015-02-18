@@ -82,7 +82,7 @@ static int _bmap(struct m_inode * inode,int block,int create)
 		panic("_bmap: block>big");
 	if (block<7) {
 		if (create && !inode->i_zone[block])
-			if (inode->i_zone[block]=new_block(inode->i_dev)) {
+			if ((inode->i_zone[block]=new_block(inode->i_dev))) {
 				inode->i_ctime=CURRENT_TIME;
 				inode->i_dirt=1;
 			}
@@ -91,7 +91,7 @@ static int _bmap(struct m_inode * inode,int block,int create)
 	block -= 7;
 	if (block<512) {
 		if (create && !inode->i_zone[7])
-			if (inode->i_zone[7]=new_block(inode->i_dev)) {
+			if ((inode->i_zone[7]=new_block(inode->i_dev))) {
 				inode->i_dirt=1;
 				inode->i_ctime=CURRENT_TIME;
 			}
@@ -101,7 +101,7 @@ static int _bmap(struct m_inode * inode,int block,int create)
 			return 0;
 		i = ((unsigned short *) (bh->b_data))[block];
 		if (create && !i)
-			if (i=new_block(inode->i_dev)) {
+			if ((i=new_block(inode->i_dev))) {
 				((unsigned short *) (bh->b_data))[block]=i;
 				bh->b_dirt=1;
 			}
@@ -110,7 +110,7 @@ static int _bmap(struct m_inode * inode,int block,int create)
 	}
 	block -= 512;
 	if (create && !inode->i_zone[8])
-		if (inode->i_zone[8]=new_block(inode->i_dev)) {
+		if ((inode->i_zone[8]=new_block(inode->i_dev))) {
 			inode->i_dirt=1;
 			inode->i_ctime=CURRENT_TIME;
 		}
@@ -120,7 +120,7 @@ static int _bmap(struct m_inode * inode,int block,int create)
 		return 0;
 	i = ((unsigned short *)bh->b_data)[block>>9];
 	if (create && !i)
-		if (i=new_block(inode->i_dev)) {
+		if ((i=new_block(inode->i_dev))) {
 			((unsigned short *) (bh->b_data))[block>>9]=i;
 			bh->b_dirt=1;
 		}
@@ -131,7 +131,7 @@ static int _bmap(struct m_inode * inode,int block,int create)
 		return 0;
 	i = ((unsigned short *)bh->b_data)[block&511];
 	if (create && !i)
-		if (i=new_block(inode->i_dev)) {
+		if ((i=new_block(inode->i_dev))) {
 			((unsigned short *) (bh->b_data))[block&511]=i;
 			bh->b_dirt=1;
 		}

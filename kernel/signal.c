@@ -155,7 +155,7 @@ int do_signal(long signr,long eax,long ebx, long ecx, long edx, long orig_eax,
 	sa_handler = (unsigned long) sa->sa_handler;
 	if (sa_handler==1)
 		return(1);   /* Ignore, see if there are more signals... */
-	if (!sa_handler) {
+	if (!sa_handler) {   /* default handler */
 		switch (signr) {
 		case SIGCONT:
 		case SIGCHLD:

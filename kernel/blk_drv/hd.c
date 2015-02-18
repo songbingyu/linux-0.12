@@ -69,6 +69,7 @@ __asm__("cld;rep;outsw"::"d" (port),"S" (buf),"c" (nr))
 
 extern void hd_interrupt(void);
 extern void rd_load(void);
+extern void init_swapping(void);
 
 /* This may be used only once, enforced by 'static int callable' */
 int sys_setup(void * BIOS)

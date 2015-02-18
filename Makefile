@@ -12,7 +12,7 @@ LD	=ld -m elf_i386
 LDFLAGS	= -Ttext 0 -e startup_32
 CC	=gcc -m32  $(RAMDISK)
 CFLAGS	=-g3 -O0 -fstrength-reduce -fomit-frame-pointer \
--fno-stack-protector -fno-builtin -w #-Wall 
+-fno-stack-protector -fno-builtin -Wall #-Wall 
 CPP	=cpp -nostdinc -Iinclude
 
 #
@@ -119,7 +119,7 @@ clean:
 	rm -f Image System.map tmp_make core boot/bootsect boot/setup \
 		boot/bootsect.s boot/setup.s
 	rm -f init/*.o tools/system tools/build boot/*.o
-	rm -f tools/kernel system.S
+	rm -f system.S tools/kernel
 	(cd mm;make clean)
 	(cd fs;make clean)
 	(cd kernel;make clean)

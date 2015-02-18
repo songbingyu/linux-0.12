@@ -1,10 +1,12 @@
 CC	=gcc -m32
 CFLAGS	=-O0 -g3 -fstrength-reduce -fno-stack-protector -fno-builtin -fomit-frame-pointer \
-	-finline-functions -nostdinc -I../include -w #-Wall
+	-finline-functions -nostdinc -I../include -Wall #-Wall
 AS	=as --32
 AR	=ar
 LD	=ld -m elf_i386
 CPP	=gcc -E -nostdinc -I../include
+NASM 	=nasm
+NMFLAGS =-f elf32
 
 .c.o:
 	$(CC) $(CFLAGS) \
@@ -15,15 +17,19 @@ CPP	=gcc -E -nostdinc -I../include
 	$(CC) $(CFLAGS) \
 	-S -o $*.s $<
 
-OBJS	= memory.o swap.o page.o
+OBJS	= memory.o swap.o page.elf32
 
 all: mm.o
 
 mm.o: $(OBJS)
 	$(LD) -r -o mm.o $(OBJS)
 
+page.elf32:
+	$(NASM) $(NMFLAGS) page.asm -o page.elf32
+
 clean:
 	rm -f core *.o *.a tmp_make
+	rm -f *.elf32
 	for i in *.c;do rm -f `basename $$i .c`.s;done
 
 dep:

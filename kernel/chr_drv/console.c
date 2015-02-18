@@ -323,8 +323,8 @@ static void del(int currcons)
 
 static void csi_J(int currcons, int vpar)
 {
-	long count __asm__("cx");
-	long start __asm__("di");
+	long count;
+	long start;
 
 	switch (vpar) {
 		case 0:	/* erase from cursor to end of display */
@@ -352,8 +352,8 @@ static void csi_J(int currcons, int vpar)
 
 static void csi_K(int currcons, int vpar)
 {
-	long count __asm__("cx");
-	long start __asm__("di");
+	long count;
+	long start;
 
 	switch (vpar) {
 		case 0:	/* erase from cursor to end of line */
@@ -688,7 +688,7 @@ void con_write(struct tty_struct * tty)
 				{ state=ESfunckey;
 				  break;
 				}  
-				if (ques=(c=='?'))
+				if ((ques=(c=='?')))
 					break;
 			case ESgetpars:
 				if (c==';' && npar<NPAR-1) {
@@ -997,7 +997,7 @@ void console_print(const char * b)
 	int currcons = fg_console;
 	char c;
 
-	while (c = *(b++)) {
+	while ((c = *(b++))) {
 		if (c == 10) {
 			cr(currcons);
 			lf(currcons);

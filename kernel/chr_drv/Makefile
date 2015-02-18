@@ -12,8 +12,10 @@ LD	=ld -m elf_i386
 LDFLAGS	=
 CC	=gcc -m32
 CFLAGS	=-g3 -O0 -fstrength-reduce -fomit-frame-pointer -fno-stack-protector \
-	-finline-functions -fno-builtin -nostdinc -I../../include -w #-Wall
+	-finline-functions -fno-builtin -nostdinc -I../../include -Wall #-Wall
 CPP	=gcc -E -nostdinc -I../../include
+NASM 	=nasm
+NMFLAGS =-f elf32
 
 .c.s:
 	$(CC) $(CFLAGS) \
@@ -24,7 +26,7 @@ CPP	=gcc -E -nostdinc -I../../include
 	$(CC) $(CFLAGS) \
 	-c -o $*.o $<
 
-OBJS  = tty_io.o console.o keyboard.o serial.o rs_io.o \
+OBJS  = tty_io.o console.o keyboard.o serial.o rs_io.elf32 \
 	tty_ioctl.o pty.o
 
 chr_drv.a: $(OBJS)
@@ -34,8 +36,12 @@ chr_drv.a: $(OBJS)
 keyboard.s: keyboard.S
 	$(CPP) -traditional keyboard.S -o keyboard.s
 
+rs_io.elf32:rs_io.asm
+	$(NASM) $(NMFLAGS) rs_io.asm -o rs_io.elf32
+
 clean:
 	rm -f core *.o *.a tmp_make keyboard.s
+	rm -f *.elf32
 	for i in *.c;do rm -f `basename $$i .c`.s;done
 
 dep:

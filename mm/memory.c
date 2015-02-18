@@ -327,11 +327,12 @@ static int try_to_share(unsigned long address, struct task_struct * p)
 	if (phys_addr >= HIGH_MEMORY || phys_addr < LOW_MEM)
 		return 0;
 	to = *(unsigned long *) to_page;
-	if (!(to & 1))
-		if (to = get_free_page())
+	if (!(to & 1)) {
+		if ((to = get_free_page()))
 			*(unsigned long *) to_page = to | 7;
 		else
 			oom();
+	}
 	to &= 0xfffff000;
 	to_page = to + ((address>>10) & 0xffc);
 	if (1 & *(unsigned long *) to_page)
@@ -484,12 +485,13 @@ void show_mem(void)
 				free++,k++;
 			pg_tbl=(unsigned long *) (0xfffff000 & pg_dir[i]);
 			for(j=0 ; j<1024 ; j++)
-				if ((pg_tbl[j]&1) && pg_tbl[j]>LOW_MEM)
+				if ((pg_tbl[j]&1) && pg_tbl[j]>LOW_MEM) {
 					if (pg_tbl[j]>HIGH_MEMORY)
 						printk("page_dir[%d][%d]: %08X\n\r",
 							i,j, pg_tbl[j]);
 					else
 						k++,free++;
+				}
 		}
 		i++;
 		if (!(i&15) && k) {
